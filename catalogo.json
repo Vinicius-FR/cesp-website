@@ -1,0 +1,178 @@
+{
+  "_leia": "Este é o catálogo do site. Edite aqui e faça commit — não precisa de build. Campos com PREENCHER estão marcados como ativo:false e não aparecem no site até você completar e virar para true. Preço em centavos: 500 = R$ 5,00.",
+  "itens": [
+    {
+      "id": "token-mtg",
+      "cat": "games",
+      "ativo": true,
+      "nome": "Token de Magic",
+      "preco": 500,
+      "estoque": 8,
+      "repro": true,
+      "producao_dias": 5,
+      "unitario": true,
+      "fotos": [],
+      "peso_kg": 0.02,
+      "caixa_cm": [
+        16,
+        12,
+        1
+      ],
+      "desc": {
+        "pt": "Token avulso, impresso e cortado aqui em papel 300 g, no tamanho padrão de carta de Magic. Verso próprio. Arte única por token nesta primeira leva — você escolhe o tipo na hora do pedido.",
+        "en": "Single token, printed and cut here on 300 g stock, standard Magic card size. Custom back. One artwork per token in this first run — you pick the type when ordering."
+      },
+      "ficha": {
+        "formato": "63 × 88 mm",
+        "papel": "300 g",
+        "corte": {
+          "pt": "manual",
+          "en": "by hand"
+        },
+        "verso": {
+          "pt": "próprio",
+          "en": "custom"
+        },
+        "venda": {
+          "pt": "por unidade",
+          "en": "per unit"
+        }
+      }
+    },
+    {
+      "id": "token-ygo",
+      "cat": "games",
+      "ativo": true,
+      "nome": "Token de Yu-Gi-Oh",
+      "preco": 400,
+      "estoque": 6,
+      "repro": true,
+      "producao_dias": 5,
+      "unitario": true,
+      "fotos": [],
+      "peso_kg": 0.02,
+      "caixa_cm": [
+        16,
+        12,
+        1
+      ],
+      "desc": {
+        "pt": "Token avulso em papel 300 g, no tamanho padrão de carta de Yu-Gi-Oh, com verso próprio. Arte única por token nesta primeira leva.",
+        "en": "Single token on 300 g stock, standard Yu-Gi-Oh card size, with a custom back. One artwork per token in this first run."
+      },
+      "ficha": {
+        "formato": "59 × 86 mm",
+        "papel": "300 g",
+        "corte": {
+          "pt": "manual",
+          "en": "by hand"
+        },
+        "verso": {
+          "pt": "próprio",
+          "en": "custom"
+        },
+        "venda": {
+          "pt": "por unidade",
+          "en": "per unit"
+        }
+      }
+    },
+    {
+      "id": "compositor",
+      "cat": "apps",
+      "ativo": true,
+      "app": true,
+      "url": "https://SEU-USUARIO.github.io/compositor/",
+      "nome": "Compositor de Cartas",
+      "preco": 0,
+      "estoque": 99,
+      "repro": true,
+      "fotos": [],
+      "desc": {
+        "pt": "A ferramenta que eu uso para fazer os tokens deste site. Monta a carta na tela, calibra a folha para impressão e confere o alinhamento entre frente e verso antes de gastar papel. Um arquivo HTML só, roda no navegador.",
+        "en": "The tool I use to make the tokens sold here. Lays out the card on screen, calibrates the sheet for printing and checks front-to-back alignment before you waste paper. A single HTML file, runs in the browser."
+      },
+      "ficha": {
+        "tipo": {
+          "pt": "ferramenta",
+          "en": "tool"
+        },
+        "formato": "A4",
+        "sangria": "3 mm",
+        "licenca": {
+          "pt": "grátis",
+          "en": "free"
+        }
+      }
+    },
+    {
+      "id": "hw-01",
+      "cat": "cars",
+      "ativo": false,
+      "nome": "PREENCHER — nome do Hot Wheels",
+      "preco": 0,
+      "estoque": 0,
+      "repro": false,
+      "fotos": [],
+      "desc": {
+        "pt": "PREENCHER — uma ou duas frases sobre a peça: estado, de onde veio, por que ela está na coleção.",
+        "en": ""
+      },
+      "ficha": {
+        "serie": "PREENCHER",
+        "ano": "PREENCHER",
+        "escala": "1:64",
+        "estado": {
+          "pt": "PREENCHER",
+          "en": ""
+        }
+      }
+    },
+    {
+      "id": "hw-02",
+      "cat": "cars",
+      "ativo": false,
+      "nome": "PREENCHER — nome do Hot Wheels",
+      "preco": 0,
+      "estoque": 0,
+      "repro": false,
+      "fotos": [],
+      "desc": {
+        "pt": "PREENCHER",
+        "en": ""
+      },
+      "ficha": {
+        "serie": "PREENCHER",
+        "ano": "PREENCHER",
+        "escala": "1:64",
+        "estado": {
+          "pt": "PREENCHER",
+          "en": ""
+        }
+      }
+    },
+    {
+      "id": "hw-03",
+      "cat": "cars",
+      "ativo": false,
+      "nome": "PREENCHER — nome do Hot Wheels",
+      "preco": 0,
+      "estoque": 0,
+      "repro": false,
+      "fotos": [],
+      "desc": {
+        "pt": "PREENCHER",
+        "en": ""
+      },
+      "ficha": {
+        "serie": "PREENCHER",
+        "ano": "PREENCHER",
+        "escala": "1:64",
+        "estado": {
+          "pt": "PREENCHER",
+          "en": ""
+        }
+      }
+    }
+  ]
+}

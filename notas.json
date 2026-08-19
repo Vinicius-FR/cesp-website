@@ -1,0 +1,18 @@
+{
+  "_leia": "Cada nota tem: slug, langs (em quais idiomas ela existe), data, título, resumo e corpo (um item do array por parágrafo). Nota que só existe em português é marcada automaticamente na listagem.",
+
+  "notas": [
+    {
+      "slug": "tokens",
+      "langs": ["pt"],
+      "dt": "17 AGO 2026",
+      "t": "Por que eu passei a imprimir meus próprios tokens",
+      "r": "Comprar token bom sai caro e demora. Imprimir sai barato e demora mais ainda — até você calibrar direito.",
+      "corpo": [
+        "Token de Magic é a peça mais ingrata do jogo: você precisa dela toda partida, ela não vale nada no mercado, e mesmo assim custa caro quando é bonita.",
+        "A primeira tentativa de imprimir em casa saiu torta. O papel entrou girado meio milímetro na segunda passada, e meio milímetro numa carta de 63 mm é a diferença entre uma borda limpa e uma carta obviamente caseira.",
+        "O que resolveu não foi papel melhor nem impressora melhor: foi medir o deslocamento da folha em vez de confiar na pré-visualização. O compositor que está aqui no site nasceu desse problema — ele calibra o alinhamento entre frente e verso antes de você gastar a primeira folha."
+      ]
+    }
+  ]
+}
