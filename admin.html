@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>Admin · CESP</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700;800&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --preto:#0A0C0A; --carvao:#121512; --linha:#1E241F; --papel:#EFEFEA;
+  --fosforo:#7CE78C; --fosforo-d:#4E9E62; --osso:#E7E4DC; --bruma:#8A9A8E;
+  --W:#FFFBD5; --U:#58B6FF; --B:#6E7A8C; --R:#FF5B5B; --G:#00E552; --I:#CE9440;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--preto);color:var(--osso);
+  font-family:"Inter",system-ui,sans-serif;font-size:14.5px;line-height:1.55}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+button{font-family:"JetBrains Mono",monospace;cursor:pointer}
+input,select,textarea{font-family:"JetBrains Mono",monospace;font-size:13px;
+  background:var(--preto);border:1px solid var(--linha);color:var(--osso);
+  padding:8px 10px;width:100%}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--fosforo-d)}
+label{display:block;font-size:12px;color:var(--bruma);margin-bottom:10px}
+label>input,label>select,label>textarea{margin-top:5px}
+small{display:block;color:var(--bruma);font-size:11px;margin-top:4px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px}
+.btn{background:none;border:1px solid var(--fosforo-d);color:var(--fosforo);
+  padding:9px 14px;font-size:12px}
+.btn:hover{border-color:var(--fosforo)}
+.btn.cheio{background:var(--fosforo);color:var(--preto);border-color:var(--fosforo);font-weight:700}
+.btn.perigo{border-color:var(--R);color:var(--R)}
+.btn.mini{padding:5px 9px;font-size:11px}
+
+/* login */
+.login{max-width:420px;margin:12vh auto;padding:26px 22px;background:var(--carvao);
+  border:1px solid var(--linha)}
+.login .eyebrow{font-family:"Silkscreen",monospace;font-size:9px;color:var(--fosforo-d);
+  letter-spacing:.14em}
+.login h1{font-family:"JetBrains Mono",monospace;font-weight:800;font-size:22px;
+  letter-spacing:-.03em;margin:6px 0 10px}
+.login p{color:var(--bruma);font-size:13px;margin:0 0 18px}
+.senha-linha{display:flex;gap:6px}
+.senha-linha .btn{flex-shrink:0}
+
+/* topo */
+header{border-bottom:1px solid var(--linha);position:sticky;top:0;z-index:20;
+  background:rgba(10,12,10,.95);backdrop-filter:blur(8px)}
+.topo{display:flex;align-items:center;gap:14px;height:56px;flex-wrap:wrap}
+.topo h1{font-family:"JetBrains Mono",monospace;font-weight:800;font-size:16px;
+  letter-spacing:-.03em;margin:0;flex:1}
+.topo .cam{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--fosforo-d)}
+
+/* métricas */
+.metricas{display:grid;gap:8px;grid-template-columns:repeat(2,1fr);margin:20px 0}
+@media(min-width:700px){.metricas{grid-template-columns:repeat(6,1fr)}}
+.m{background:var(--carvao);border:1px solid var(--linha);padding:11px 13px}
+.m span{display:block;font-family:"Silkscreen",monospace;font-size:8px;color:var(--fosforo-d);
+  letter-spacing:.1em;margin-bottom:6px}
+.m strong{font-family:"JetBrains Mono",monospace;font-size:21px;letter-spacing:-.03em}
+
+/* barra */
+.barra{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-bottom:16px}
+.barra label{margin:0;flex:1 1 180px}
+.barra .acoes{display:flex;gap:6px;flex-wrap:wrap}
+
+/* lista */
+.item{background:var(--carvao);border:1px solid var(--linha);padding:13px 15px;
+  margin-bottom:8px;display:flex;gap:14px;align-items:flex-start;position:relative}
+.item .mn{position:absolute;left:0;top:0;bottom:0;width:4px}
+.item .capa{width:58px;height:58px;background:var(--preto);border:1px solid var(--linha);
+  flex-shrink:0;object-fit:cover}
+.item .corpo{flex:1;min-width:0}
+.item .nm{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:14px;
+  letter-spacing:-.02em}
+.item .id{font-family:"Silkscreen",monospace;font-size:8px;color:var(--fosforo-d)}
+.item .dados{font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--bruma);
+  margin-top:5px}
+.item .vars{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+.tagv{font-family:"JetBrains Mono",monospace;font-size:10.5px;border:1px solid var(--linha);
+  padding:2px 7px;color:var(--bruma)}
+.tagv b{color:var(--osso);font-weight:500}
+.tagv.zero{border-color:var(--R);color:var(--R)}
+.tagv.off{opacity:.4;text-decoration:line-through}
+.selo{font-family:"Silkscreen",monospace;font-size:8px;padding:3px 6px;margin-left:6px}
+.selo.arq{color:var(--bruma);border:1px solid var(--linha)}
+.selo.esg{background:var(--R);color:var(--preto)}
+.selo.enc{color:var(--G);border:1px solid var(--G)}
+
+/* diálogo */
+dialog{border:1px solid var(--linha);background:var(--preto);color:var(--osso);
+  padding:0;max-width:900px;width:calc(100% - 24px);max-height:92vh}
+dialog::backdrop{background:rgba(0,0,0,.75)}
+.dcard{padding:20px}
+.dhead{display:flex;justify-content:space-between;align-items:flex-start;
+  border-bottom:1px solid var(--linha);padding-bottom:12px;margin-bottom:16px}
+.dhead h2{font-family:"JetBrains Mono",monospace;font-weight:800;font-size:18px;
+  letter-spacing:-.03em;margin:4px 0 0}
+.dhead .x{background:none;border:0;color:var(--bruma);font-size:22px;line-height:1}
+.grid2{display:grid;gap:20px;grid-template-columns:1fr}
+@media(min-width:760px){.grid2{grid-template-columns:1fr 1fr}}
+h3{font-family:"JetBrains Mono",monospace;font-size:13px;margin:0 0 12px;
+  padding-bottom:6px;border-bottom:1px solid var(--linha)}
+.cols{display:grid;gap:10px;grid-template-columns:1fr 1fr}
+.cols3{display:grid;gap:10px;grid-template-columns:1fr 1fr}
+.check{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--osso);
+  margin-bottom:10px}
+.check input{width:auto;margin:0}
+.vrow{display:grid;gap:6px;grid-template-columns:1fr 78px 78px 30px;align-items:center;
+  margin-bottom:6px}
+.vrow input{margin:0}
+.vrow .del{background:none;border:1px solid var(--linha);color:var(--R);padding:7px 0}
+.dacoes{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;
+  border-top:1px solid var(--linha);padding-top:14px;margin-top:16px}
+.msg{font-family:"JetBrains Mono",monospace;font-size:12px;margin-top:10px;min-height:16px}
+.msg.err{color:var(--R)} .msg.ok{color:var(--G)}
+.vazio{text-align:center;color:var(--bruma);padding:34px 0;
+  font-family:"JetBrains Mono",monospace;font-size:13px}
+.ped{background:var(--carvao);border:1px solid var(--linha);padding:12px 14px;margin-bottom:8px}
+.ped .cab{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;
+  font-family:"JetBrains Mono",monospace;font-size:12px}
+.ped .itens{font-size:12px;color:var(--bruma);margin-top:6px}
+.secao{margin:30px 0}
+.secao>h2{font-family:"JetBrains Mono",monospace;font-weight:800;font-size:17px;
+  letter-spacing:-.03em;margin:0 0 4px}
+.secao>p{color:var(--bruma);font-size:13px;margin:0 0 14px}
+.miniaturas{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.miniaturas img{width:48px;height:48px;object-fit:cover;border:1px solid var(--linha)}
+</style>
+</head>
+<body>
+
+<!-- ------------------------------------------------------------ login -->
+<section class="login" id="login">
+  <p class="eyebrow">ÁREA PRIVADA</p>
+  <h1>CESP Admin</h1>
+  <p>Produtos, variações, estoque, imagens e pedidos. A chave não fica salva em
+     lugar nenhum: ela é trocada por uma sessão de 8 horas.</p>
+  <label>Chave administrativa
+    <span class="senha-linha">
+      <input id="chave" type="password" autocomplete="current-password">
+      <button class="btn" type="button" id="verChave" title="mostrar">◉</button>
+    </span>
+  </label>
+  <button class="btn cheio" id="entrar" style="width:100%">entrar</button>
+  <p class="msg" id="msgLogin"></p>
+</section>
+
+<!-- --------------------------------------------------------- dashboard -->
+<div id="painel" hidden>
+  <header><div class="wrap topo">
+    <h1>CESP admin</h1>
+    <span class="cam mono" id="apiInfo"></span>
+    <button class="btn mini" id="sair">sair</button>
+  </div></header>
+
+  <div class="wrap">
+    <div class="metricas" id="metricas"></div>
+
+    <div class="barra">
+      <label>buscar<input id="busca" type="search" placeholder="nome, id ou variação…"></label>
+      <label style="flex:0 1 170px">exibir
+        <select id="filtro">
+          <option value="active">ativos</option>
+          <option value="available">com estoque</option>
+          <option value="soldout">esgotados</option>
+          <option value="archived">arquivados</option>
+        </select>
+      </label>
+      <div class="acoes">
+        <button class="btn" id="recarregar">atualizar</button>
+        <button class="btn" id="exportar">exportar JSON</button>
+        <button class="btn cheio" id="novo">+ produto</button>
+      </div>
+    </div>
+
+    <section class="secao">
+      <h2>Produtos</h2>
+      <div id="lista"></div>
+      <div class="vazio" id="listaVazia" hidden>nenhum produto com esse filtro</div>
+    </section>
+
+    <section class="secao">
+      <h2>Pedidos</h2>
+      <p>Encomenda só libera etiqueta depois que você marcar a produção como pronta.</p>
+      <div id="pedidos"></div>
+      <div class="vazio" id="pedidosVazio" hidden>nenhum pedido ainda</div>
+    </section>
+  </div>
+</div>
+
+<!-- ------------------------------------------------------------ editor -->
+<dialog id="dlgProduto"><div class="dcard">
+  <div class="dhead">
+    <div><p class="eyebrow mono" style="font-size:9px;color:var(--fosforo-d);margin:0">PRODUTO</p>
+      <h2 id="dlgTitulo">Novo produto</h2></div>
+    <button class="x" type="button" id="fecharProduto">&times;</button>
+  </div>
+
+  <div class="grid2">
+    <div>
+      <h3>Informações</h3>
+      <label>ID<input id="fId" maxlength="100" placeholder="token-mtg">
+        <small>minúsculas, números e hífen. Não muda depois de criado.</small></label>
+      <label>Nome<input id="fNome" maxlength="160"></label>
+      <label>Descrição<textarea id="fDesc" rows="3" maxlength="1000"></textarea></label>
+      <div class="cols">
+        <label>Preço (R$)<input id="fPreco" type="number" min="0" step="0.01">
+          <small>0 = acervo, não está à venda</small></label>
+        <label>Estoque<input id="fEstoque" type="number" min="0" step="1">
+          <small>ignorado se houver variações</small></label>
+      </div>
+      <div class="cols">
+        <label>Categoria<select id="fCat">
+          <option value="cards">cards</option><option value="cars">cars</option>
+          <option value="comics">comics</option><option value="blocks">blocks</option>
+          <option value="games">games</option><option value="apps">apps</option>
+        </select></label>
+        <label>Ordem<input id="fOrdem" type="number" step="1" value="0"></label>
+      </div>
+      <label class="check"><input id="fAtivo" type="checkbox" checked> ativo na loja</label>
+      <label class="check"><input id="fRepro" type="checkbox">
+        reproduzível — dá pra fazer outro igual</label>
+      <div class="cols">
+        <label>Dias de produção<input id="fDias" type="number" min="0" step="1" value="7"></label>
+        <label>Valor declarado (R$)<input id="fDeclarado" type="number" min="0" step="0.01" value="0">
+          <small>seguro do frete</small></label>
+      </div>
+
+      <h3 style="margin-top:20px">Variações</h3>
+      <small style="margin:-6px 0 10px">Cada variação tem estoque próprio. Preço vazio herda o do
+        produto. Remover aqui apenas desativa — pedido antigo continua apontando para ela.</small>
+      <div id="vars"></div>
+      <button class="btn mini" type="button" id="addVar">+ variação</button>
+    </div>
+
+    <div>
+      <h3>Frete</h3>
+      <div class="cols">
+        <label>Largura (cm)<input id="fLarg" type="number" min="0.1" step="0.1" value="16"></label>
+        <label>Altura (cm)<input id="fAlt" type="number" min="0.1" step="0.1" value="1"></label>
+      </div>
+      <div class="cols">
+        <label>Comprimento (cm)<input id="fComp" type="number" min="0.1" step="0.1" value="12"></label>
+        <label>Peso (kg)<input id="fPeso" type="number" min="0.001" step="0.001" value="0.02"></label>
+      </div>
+      <label class="check"><input id="fProv" type="checkbox"> medidas provisórias</label>
+
+      <h3 style="margin-top:20px">Imagens</h3>
+      <small style="margin:-6px 0 10px">A primeira é a capa. Uma por linha.</small>
+      <label><textarea id="fImgs" rows="4" placeholder="1723-ab12cd.jpg&#10;assets/foto.jpg"></textarea></label>
+      <label>Enviar arquivos<input id="fUpload" type="file" multiple
+        accept="image/jpeg,image/png,image/webp,image/gif">
+        <small>até 6 MB cada; vão para o R2 e o nome cai na lista acima</small></label>
+      <div class="miniaturas" id="minis"></div>
+    </div>
+  </div>
+
+  <div class="dacoes">
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <button class="btn perigo mini" type="button" id="arquivar">arquivar</button>
+      <button class="btn mini" type="button" id="historico">histórico</button>
+    </div>
+    <div style="display:flex;gap:6px">
+      <button class="btn mini" type="button" id="cancelar">cancelar</button>
+      <button class="btn cheio" type="button" id="salvar">salvar</button>
+    </div>
+  </div>
+  <p class="msg" id="msgProduto"></p>
+</div></dialog>
+
+<dialog id="dlgHist"><div class="dcard">
+  <div class="dhead"><div><h2>Histórico de estoque</h2></div>
+    <button class="x" type="button" id="fecharHist">&times;</button></div>
+  <div id="histLista"></div>
+</div></dialog>
+
+<script src="config.js"></script>
+<script>
+const CFG = window.CESP || {};
+const API = (CFG.API_BASE || "").replace(/\/$/, "");
+const MANA = {cards:"U", cars:"R", comics:"B", blocks:"W", games:"G", apps:"I"};
+const $ = id => document.getElementById(id);
+const brl = c => (c/100).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+const esc = s => String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+
+// A sessão vive só nesta aba. Fechou, acabou.
+let TOKEN = sessionStorage.getItem("cesp_admin") || "";
+let PRODUTOS = [], EDITANDO = null;
+
+function msg(el, texto, tipo){ el.textContent = texto; el.className = "msg " + (tipo||""); }
+
+async function api(caminho, opcoes = {}){
+  if(!API) throw new Error("API_BASE vazio no config.js — configure o Worker primeiro.");
+  const r = await fetch(API + caminho, {
+    ...opcoes,
+    headers: {
+      ...(opcoes.corpoForm ? {} : {"content-type":"application/json"}),
+      ...(TOKEN ? {authorization:"Bearer " + TOKEN} : {}),
+      ...(opcoes.headers||{})
+    }
+  });
+  let b = null; try { b = await r.json(); } catch(e){}
+  if(r.status === 401){ sair(true); throw new Error("sessão expirada — entre de novo"); }
+  if(!r.ok) throw new Error((b && b.mensagem) || ("erro " + r.status));
+  return b;
+}
+
+/* ------------------------------------------------------------- login */
+$("verChave").onclick = () => {
+  const i = $("chave"); i.type = i.type === "password" ? "text" : "password";
+};
+$("entrar").onclick = async () => {
+  const key = $("chave").value.trim();
+  if(!key) return msg($("msgLogin"), "digite a chave", "err");
+  msg($("msgLogin"), "entrando…");
+  try{
+    const r = await fetch(API + "/api/admin/login", {
+      method:"POST", headers:{"content-type":"application/json"},
+      body: JSON.stringify({key})
+    });
+    const b = await r.json();
+    if(!r.ok) return msg($("msgLogin"), b.mensagem || "falhou", "err");
+    TOKEN = b.token;
+    sessionStorage.setItem("cesp_admin", TOKEN);
+    $("chave").value = "";
+    abrirPainel();
+  }catch(e){ msg($("msgLogin"), String(e.message||e), "err"); }
+};
+$("chave").addEventListener("keydown", e => { if(e.key === "Enter") $("entrar").click(); });
+
+function sair(silencioso){
+  if(TOKEN && !silencioso) api("/api/admin/logout", {method:"POST"}).catch(()=>{});
+  TOKEN = ""; sessionStorage.removeItem("cesp_admin");
+  $("painel").hidden = true; $("login").hidden = false;
+  if(silencioso) msg($("msgLogin"), "sessão expirada, entre de novo", "err");
+}
+$("sair").onclick = () => sair(false);
+
+async function abrirPainel(){
+  $("login").hidden = true; $("painel").hidden = false;
+  $("apiInfo").textContent = API.replace(/^https?:\/\//,"");
+  await Promise.all([carregarMetricas(), carregarProdutos(), carregarPedidos()]);
+}
+
+/* ---------------------------------------------------------- métricas */
+async function carregarMetricas(){
+  try{
+    const m = await api("/api/admin/overview");
+    const campos = [["ativos","produtos_ativos"],["unidades","unidades"],
+      ["esgotados","esgotados"],["arquivados","arquivados"],
+      ["em produção","em_producao"],["pendentes","pedidos_pendentes"]];
+    $("metricas").innerHTML = campos.map(([r,k]) =>
+      `<div class="m"><span>${r}</span><strong>${m[k] ?? "—"}</strong></div>`).join("");
+  }catch(e){ $("metricas").innerHTML = `<div class="m"><span>erro</span><strong>—</strong></div>`; }
+}
+
+/* ---------------------------------------------------------- produtos */
+function linhaProduto(p){
+  const mana = MANA[p.category] || "U";
+  const capa = p.imagens && p.imagens[0]
+    ? `<img class="capa" src="${p.imagens[0].startsWith("http")||p.imagens[0].includes("/")
+        ? esc(p.imagens[0]) : API + "/api/product-images/" + esc(p.imagens[0])}" alt="">`
+    : `<div class="capa"></div>`;
+  const selos = [];
+  if(!p.active) selos.push('<span class="selo arq">arquivado</span>');
+  if(p.estoque_total === 0 && !p.reproducible) selos.push('<span class="selo esg">esgotado</span>');
+  if(p.estoque_total === 0 && p.reproducible) selos.push('<span class="selo enc">encomenda</span>');
+  const vars = (p.variantes||[]).map(v =>
+    `<span class="tagv ${v.stock===0?"zero":""} ${v.active?"":"off"}">${esc(v.name)} <b>${v.stock}</b>${
+      v.price_cents!=null?" · "+brl(v.price_cents):""}</span>`).join("");
+  return `<div class="item" data-id="${esc(p.id)}">
+    <span class="mn" style="background:var(--${mana})"></span>
+    ${capa}
+    <div class="corpo">
+      <div class="nm">${esc(p.name)}${selos.join("")}</div>
+      <div class="id">${esc(p.id)} · ~/${esc(p.category)}</div>
+      <div class="dados">${p.price_cents ? brl(p.price_cents) : "acervo"} ·
+        estoque ${p.estoque_total} ·
+        ${p.weight_kg} kg · ${p.width_cm}×${p.height_cm}×${p.length_cm} cm</div>
+      ${vars ? `<div class="vars">${vars}</div>` : ""}
+    </div>
+    <button class="btn mini" data-editar="${esc(p.id)}">editar</button>
+  </div>`;
+}
+
+async function carregarProdutos(){
+  try{
+    const r = await api("/api/admin/products?status=" + $("filtro").value +
+      "&q=" + encodeURIComponent($("busca").value.trim()));
+    PRODUTOS = r.produtos || [];
+    $("lista").innerHTML = PRODUTOS.map(linhaProduto).join("");
+    $("listaVazia").hidden = PRODUTOS.length > 0;
+    $("lista").querySelectorAll("[data-editar]").forEach(b =>
+      b.onclick = () => abrirEditor(b.dataset.editar));
+  }catch(e){ $("lista").innerHTML = `<div class="vazio">${esc(e.message)}</div>`; }
+}
+$("recarregar").onclick = () => { carregarMetricas(); carregarProdutos(); carregarPedidos(); };
+$("filtro").onchange = carregarProdutos;
+let tBusca; $("busca").oninput = () => { clearTimeout(tBusca); tBusca = setTimeout(carregarProdutos, 300); };
+$("exportar").onclick = () => {
+  const b = new Blob([JSON.stringify({itens:PRODUTOS}, null, 2)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(b); a.download = "catalogo-export.json"; a.click();
+};
+
+/* ------------------------------------------------------------ editor */
+function linhaVar(v = {}){
+  const d = document.createElement("div");
+  d.className = "vrow";
+  d.innerHTML = `<input placeholder="nome da variação" value="${esc(v.name||"")}" data-v="name">
+    <input type="number" min="0" step="1" placeholder="estoque" value="${v.stock ?? 0}" data-v="stock">
+    <input type="number" min="0" step="0.01" placeholder="preço" value="${
+      v.price_cents!=null ? (v.price_cents/100) : ""}" data-v="preco">
+    <button class="del" type="button" title="remover">×</button>`;
+  d.dataset.id = v.id || "";
+  d.querySelector(".del").onclick = () => d.remove();
+  return d;
+}
+$("addVar").onclick = () => $("vars").appendChild(linhaVar());
+
+function abrirEditor(id){
+  const p = id ? PRODUTOS.find(x => x.id === id) : null;
+  EDITANDO = p ? p.id : null;
+  $("dlgTitulo").textContent = p ? "Editar produto" : "Novo produto";
+  $("fId").value = p ? p.id : ""; $("fId").disabled = !!p;
+  $("fNome").value = p ? p.name : "";
+  $("fDesc").value = p ? p.description : "";
+  $("fPreco").value = p ? (p.price_cents/100) : 0;
+  $("fEstoque").value = p ? p.stock : 0;
+  $("fCat").value = p ? p.category : "cards";
+  $("fOrdem").value = p ? p.sort_order : 0;
+  $("fAtivo").checked = p ? !!p.active : true;
+  $("fRepro").checked = p ? !!p.reproducible : false;
+  $("fDias").value = p ? p.production_days : 7;
+  $("fDeclarado").value = p ? (p.declared_value_cents/100) : 0;
+  $("fLarg").value = p ? p.width_cm : 16;
+  $("fAlt").value = p ? p.height_cm : 1;
+  $("fComp").value = p ? p.length_cm : 12;
+  $("fPeso").value = p ? p.weight_kg : 0.02;
+  $("fProv").checked = p ? !!p.shipping_provisional : false;
+  $("fImgs").value = p ? (p.imagens||[]).join("\n") : "";
+  $("vars").innerHTML = "";
+  (p && p.variantes || []).filter(v => v.active).forEach(v => $("vars").appendChild(linhaVar(v)));
+  $("arquivar").hidden = !p;
+  $("historico").hidden = !p;
+  msg($("msgProduto"), "");
+  pintaMinis();
+  $("dlgProduto").showModal();
+}
+$("novo").onclick = () => abrirEditor(null);
+$("cancelar").onclick = $("fecharProduto").onclick = () => $("dlgProduto").close();
+
+function pintaMinis(){
+  const refs = $("fImgs").value.split("\n").map(s => s.trim()).filter(Boolean);
+  $("minis").innerHTML = refs.map(r =>
+    `<img src="${r.startsWith("http")||r.includes("/") ? esc(r)
+      : API + "/api/product-images/" + esc(r)}" alt="">`).join("");
+}
+$("fImgs").oninput = pintaMinis;
+
+$("fUpload").onchange = async e => {
+  const arquivos = [...e.target.files];
+  if(!arquivos.length) return;
+  msg($("msgProduto"), "enviando " + arquivos.length + " imagem(ns)…");
+  try{
+    const fd = new FormData();
+    arquivos.forEach(a => fd.append("file", a));
+    const r = await api("/api/admin/images", {method:"POST", body:fd, corpoForm:true});
+    const atual = $("fImgs").value.split("\n").map(s=>s.trim()).filter(Boolean);
+    $("fImgs").value = atual.concat(r.imagens).join("\n");
+    pintaMinis();
+    msg($("msgProduto"), r.imagens.length + " imagem(ns) enviada(s)", "ok");
+  }catch(err){ msg($("msgProduto"), String(err.message||err), "err"); }
+  e.target.value = "";
+};
+
+$("salvar").onclick = async () => {
+  const variantes = [...$("vars").children].map(d => {
+    const g = k => d.querySelector(`[data-v="${k}"]`).value;
+    const preco = g("preco").trim();
+    return {
+      id: d.dataset.id || undefined,
+      name: g("name").trim(),
+      stock: Number(g("stock")) || 0,
+      price_cents: preco === "" ? null : Math.round(Number(preco) * 100)
+    };
+  }).filter(v => v.name);
+
+  const corpo = {
+    id: $("fId").value.trim().toLowerCase(),
+    name: $("fNome").value.trim(),
+    description: $("fDesc").value.trim(),
+    price_cents: Math.round(Number($("fPreco").value) * 100) || 0,
+    stock: Number($("fEstoque").value) || 0,
+    category: $("fCat").value,
+    sort_order: Number($("fOrdem").value) || 0,
+    active: $("fAtivo").checked,
+    reproducible: $("fRepro").checked,
+    production_days: Number($("fDias").value) || 0,
+    declared_value_cents: Math.round(Number($("fDeclarado").value) * 100) || 0,
+    width_cm: Number($("fLarg").value), height_cm: Number($("fAlt").value),
+    length_cm: Number($("fComp").value), weight_kg: Number($("fPeso").value),
+    shipping_provisional: $("fProv").checked,
+    imagens: $("fImgs").value.split("\n").map(s => s.trim()).filter(Boolean),
+    variantes
+  };
+  msg($("msgProduto"), "salvando…");
+  try{
+    if(EDITANDO) await api("/api/admin/products/" + EDITANDO, {method:"PATCH", body:JSON.stringify(corpo)});
+    else await api("/api/admin/products", {method:"POST", body:JSON.stringify(corpo)});
+    msg($("msgProduto"), "salvo", "ok");
+    await carregarProdutos(); await carregarMetricas();
+    setTimeout(() => $("dlgProduto").close(), 500);
+  }catch(e){ msg($("msgProduto"), String(e.message||e), "err"); }
+};
+
+$("arquivar").onclick = async () => {
+  if(!EDITANDO) return;
+  if(!confirm("Arquivar este produto? Ele sai da loja mas continua existindo para os pedidos antigos.")) return;
+  try{
+    await api("/api/admin/products/" + EDITANDO, {method:"DELETE"});
+    $("dlgProduto").close(); await carregarProdutos(); await carregarMetricas();
+  }catch(e){ msg($("msgProduto"), String(e.message||e), "err"); }
+};
+
+$("historico").onclick = async () => {
+  if(!EDITANDO) return;
+  try{
+    const h = await api("/api/admin/products/" + EDITANDO + "/history");
+    const ajustes = (h.ajustes||[]).map(a =>
+      `<div class="ped"><div class="cab"><span>${esc(a.product_id)}</span>
+        <span>${a.old_stock} → ${a.new_stock} (${a.delta>0?"+":""}${a.delta})</span></div>
+        <div class="itens">${esc(a.reason||"")} · ${esc((a.created_at||"").slice(0,16).replace("T"," "))}</div></div>`).join("");
+    const vendas = (h.vendas||[]).map(v =>
+      `<div class="ped"><div class="cab"><span>venda ${esc(v.order_nsu)}</span>
+        <span>−${v.quantity}</span></div></div>`).join("");
+    $("histLista").innerHTML = (ajustes + vendas) || '<div class="vazio">sem movimentação</div>';
+    $("dlgHist").showModal();
+  }catch(e){ msg($("msgProduto"), String(e.message||e), "err"); }
+};
+$("fecharHist").onclick = () => $("dlgHist").close();
+
+/* ----------------------------------------------------------- pedidos */
+async function carregarPedidos(){
+  try{
+    const r = await api("/api/admin/orders");
+    const ps = r.pedidos || [];
+    $("pedidos").innerHTML = ps.map(p => {
+      const itens = (p.itens||[]).map(i =>
+        `${i.quantity}× ${esc(i.product_name)}${i.variant_name?" ("+esc(i.variant_name)+")":""}`).join(", ");
+      const producao = p.requires_production && p.production_status !== "done";
+      return `<div class="ped">
+        <div class="cab"><span>${esc(p.order_nsu)} · ${esc(p.customer_name||"")}</span>
+          <span>${brl(p.total_cents||0)} · ${esc(p.status)}</span></div>
+        <div class="itens">${itens}</div>
+        ${producao ? `<button class="btn mini" style="margin-top:9px"
+          data-pronto="${esc(p.order_nsu)}">marcar produção como pronta</button>` : ""}
+      </div>`;
+    }).join("");
+    $("pedidosVazio").hidden = ps.length > 0;
+    $("pedidos").querySelectorAll("[data-pronto]").forEach(b => b.onclick = async () => {
+      await api("/api/admin/orders/" + b.dataset.pronto + "/production-done", {method:"POST"});
+      carregarPedidos(); carregarMetricas();
+    });
+  }catch(e){ $("pedidos").innerHTML = `<div class="vazio">${esc(e.message)}</div>`; }
+}
+
+/* ------------------------------------------------------------- início */
+if(!API){
+  $("login").innerHTML = `<p class="eyebrow">ÁREA PRIVADA</p><h1>CESP Admin</h1>
+    <p>O <code>API_BASE</code> está vazio no <code>config.js</code>. O painel precisa do
+    Worker no ar para funcionar — sem ele não há o que administrar.</p>`;
+} else if(TOKEN){
+  abrirPainel();
+}
+</script>
+</body>
+</html>

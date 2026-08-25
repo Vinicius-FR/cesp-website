@@ -6,6 +6,20 @@ frete e etiqueta pelo Melhor Envio, notificação por SMTP.
 
 **Custo: só o domínio.** Todo o resto cabe nos planos gratuitos.
 
+> ## Estado do projeto, sem rodeio
+>
+> | camada | situação |
+> |---|---|
+> | Site (vitrine, carrinho, notas, apoio, 2 idiomas) | **pronta** |
+> | Painel admin + API de administração | **pronta**, com 33 testes |
+> | Banco, bindings, secrets, deploy | **pronto** |
+> | **API de loja** — catálogo público, cotação, checkout, webhook, baixa de estoque, etiqueta, e-mail | **NÃO IMPLEMENTADA** |
+>
+> Na prática: **hoje o site vende pelo WhatsApp**, não por checkout automático.
+> Você consegue publicar, cadastrar produto pelo painel e receber pedido — mas o
+> pagamento é combinado na conversa. O checkout automático depende da camada de
+> loja, detalhada na seção 15.
+
 ---
 
 ## Índice
@@ -448,19 +462,68 @@ do frete em item caro.
 **Pronto:**
 
 - Frontend completo: catálogo, categorias, carrinho, item, notas, apoio, dois idiomas
+- **Painel administrativo** (`admin.html`) e a camada admin do Worker: login com
+  sessão, produtos, variações, estoque com histórico, imagens no R2 e pedidos.
+  Coberto por 33 testes automatizados contra banco real (`worker/testes/`)
 - `schema.sql` com produtos, variações, imagens, estoque, pedidos, etiquetas, admin
 - `wrangler.jsonc` com bindings e a lista de secrets
 - Ferramentas de post do Instagram
 
 **Falta, e é o próximo passo:**
 
-- **`worker/src/index.js`** — a API. É a peça grande: catálogo, checkout,
-  webhook, `payment_check`, baixa de estoque, etiqueta, SMTP e as rotas do admin.
-  A arquitetura já está decidida; falta escrever contra este esquema.
-- **`admin.html`** — painel de produtos, estoque e pedidos.
+- **A camada de loja do Worker**: `/api/catalog`, cotação de frete, checkout,
+  webhook da InfinitePay, `payment_check`, baixa de estoque, etiqueta e SMTP.
 - Ligar o frontend na API: hoje ele lê `catalogo.json` direto e o botão de
   pagamento cai no WhatsApp quando `API_BASE` está vazio.
 
 Enquanto o Worker não sobe, o site funciona e vende pelo WhatsApp. Não é o
 destino, mas é melhor que perfil sem site — e a troca depois é uma linha no
 `config.js`.
+
+
+---
+
+## 16. Segurança: o que é público e o que não é
+
+**A URL da API é pública, e isso não é falha.** O navegador do cliente precisa
+chamá-la para montar a vitrine e fechar pedido; ela aparece no DevTools de
+qualquer visitante. O mesmo vale para o `config.js` e para o `admin.html`, que
+ficam no repositório público do site.
+
+O que protege não é esconder a URL — é cada rota decidir quem pode chamá-la:
+
+| rota | quem pode |
+|---|---|
+| `/api/catalog`, `/api/shipping/quote`, `/api/checkout` | qualquer um. É a loja |
+| `/api/product-images/*` | qualquer um. São as fotos dos produtos |
+| `/api/infinitepay/webhook` | a InfinitePay, validado pelo conteúdo |
+| **`/api/admin/*`** | **só com sessão válida** |
+
+**Por que `config.js` não vira secret:** não existe segredo em código de
+frontend. Qualquer valor que o navegador precise ler, o visitante também lê —
+minificar ou ofuscar só atrasa. Por isso o `config.js` só tem coisa pública:
+endereço da API, WhatsApp, Instagram, chave Pix. Nenhum desses abre porta.
+
+O que **nunca** pode ir para lá: `ADMIN_API_KEY`, token do Melhor Envio, senha
+de SMTP. Esses vivem só como secret do Worker.
+
+**Como o painel se autentica:**
+
+1. Você digita a chave. Ela vai uma vez para `/api/admin/login`.
+2. O Worker compara em tempo constante e devolve um **token de sessão** de 8 h.
+3. O banco guarda o **hash** do token, não o token — vazamento de banco não vira
+   sessão.
+4. O token fica em `sessionStorage`: morre quando você fecha a aba.
+5. Oito tentativas erradas em 15 minutos bloqueiam o IP.
+
+**A chave nunca é gravada em disco em lugar nenhum.** Nem no repositório, nem no
+navegador.
+
+Três recomendações que não estão no código:
+
+- Gere a chave com `openssl rand -base64 32`. Chave curta derruba tudo isso.
+- Troque a chave se suspeitar de qualquer coisa: `wrangler secret put ADMIN_API_KEY`
+  invalida logins futuros na hora.
+- O `admin.html` é público como arquivo, e está com `noindex`. Isso evita
+  buscador, não evita quem tenta o endereço — e não precisa evitar, porque sem
+  a chave a página é um formulário que não faz nada.
