@@ -207,6 +207,12 @@ footer{border-top:1px solid var(--linha);margin-top:40px;padding:28px 0 46px}
   color:var(--osso);cursor:pointer;font-size:15px;line-height:1}
 .qtd-ctl button:hover{border-color:var(--fosforo-d)}
 .wpp{font-size:12px;color:var(--bruma);margin-top:9px;line-height:1.5}
+.varsel{display:block;font-family:"JetBrains Mono",monospace;font-size:11px;
+  color:var(--bruma);margin:0 0 12px;letter-spacing:.08em;text-transform:uppercase}
+.varsel select{width:100%;margin-top:6px;background:var(--preto);color:var(--osso);
+  border:1px solid var(--linha);padding:10px;font-family:"JetBrains Mono",monospace;
+  font-size:13px;text-transform:none;letter-spacing:0}
+.varsel select:focus{outline:0;border-color:var(--fosforo-d)}
 .intl{border:1px solid var(--I);border-left-width:3px;padding:12px 14px;margin-top:14px;
   font-size:13px;line-height:1.55;color:var(--bruma)}
 .intl b{color:var(--I);font-family:"JetBrains Mono",monospace;font-size:12.5px}
@@ -340,6 +346,7 @@ const DIC = {
            en:"Runs in the browser. No install, no account."},
   abrir:{pt:"abrir a ferramenta", en:"open the tool"},
   so_pt:{pt:"", en:"this one is only in Portuguese"},
+  escolha:{pt:"escolha o tipo", en:"pick the type"},
   rod_entrega:{pt:"entrega e prazos", en:"shipping and delivery"},
   rod_trocas:{pt:"trocas e devoluções", en:"returns and exchanges"},
   rod_contato:{pt:"contato", en:"contact"}
@@ -366,15 +373,26 @@ const rot = k => (ROT[k] && ROT[k][LANG]) || k;
 
 let CATALOGO = [], NOTAS = [], PRONTO = false, FALHA = null;
 
+let FONTE = "arquivo";
 async function carregar(){
+  const base = (CFG.API_BASE || "").replace(/\/$/, "");
   try{
-    const [c, n] = await Promise.all([
-      fetch("catalogo.json?v=" + Date.now()).then(r => r.json()),
-      fetch("notas.json?v=" + Date.now()).then(r => r.json()).catch(() => ({notas:[]}))
-    ]);
-    // item com ativo:false fica fora do site — é assim que rascunho não vaza
+    let c = null;
+    // O catálogo verdadeiro vive no banco, pelo Worker. O catalogo.json fica
+    // como rede de segurança: se a API cair, a vitrine continua de pé com a
+    // última versão publicada em vez de mostrar loja vazia.
+    if(base){
+      try{
+        const r = await fetch(base + "/api/catalog", {cache:"no-store"});
+        if(r.ok){ c = await r.json(); FONTE = "api"; }
+      }catch(e){ /* silêncio: cai no arquivo */ }
+    }
+    if(!c) c = await fetch("catalogo.json?v=" + Date.now()).then(r => r.json());
+    const n = await fetch("notas.json?v=" + Date.now()).then(r => r.json())
+      .catch(() => ({notas:[]}));
     CATALOGO = (c.itens || []).filter(i => i.ativo !== false);
     NOTAS = n.notas || [];
+    console.info("CESP · catálogo lido de: " + FONTE + " · " + CATALOGO.length + " itens");
   }catch(e){ FALHA = e.message; }
   PRONTO = true;
   rotear();
@@ -406,23 +424,33 @@ function moldura(p, i, cls){
 /* ---------------------------------------------------------------- carrinho */
 let CART = [];
 const qtdTotal = () => CART.reduce((s,l) => s+l.q, 0);
-function addCart(id, q){
+const chaveLinha = l => l.id + "|" + (l.vid || "");
+const varDe = (p, vid) => (p.variacoes || []).find(v => v.id === vid) || null;
+function precoDe(p, vid){ const v = varDe(p, vid); return v ? v.preco : p.preco; }
+function estoqueDe(p, vid){ const v = varDe(p, vid); return v ? v.estoque : p.estoque; }
+function maxLinha(p, vid){ return p.repro ? 20 : estoqueDe(p, vid); }
+function nomeLinha(p, vid){
+  const v = varDe(p, vid); return p.nome + (v ? " · " + v.nome : "");
+}
+function addCart(id, q, vid){
   const p = porId(id); if(!p) return;
-  const l = CART.find(x => x.id === id);
+  const chave = id + "|" + (vid || "");
+  const l = CART.find(x => chaveLinha(x) === chave);
   const n = Math.max(1, q || 1);
-  if(l) l.q = Math.min(maxDe(p), l.q + n); else CART.push({id, q: Math.min(maxDe(p), n)});
+  const teto = maxLinha(p, vid);
+  if(l) l.q = Math.min(teto, l.q + n); else CART.push({id, vid: vid || "", q: Math.min(teto, n)});
   pintaCart(); abreCart();
 }
-function tiraCart(id){ CART = CART.filter(l => l.id !== id); pintaCart(); }
+function tiraCart(chave){ CART = CART.filter(l => chaveLinha(l) !== chave); pintaCart(); }
 const abreCart = () => document.getElementById("drawer").classList.add("on");
 const fechaCart = () => document.getElementById("drawer").classList.remove("on");
 
 function textoPedido(){
   const linhas = CART.map(l => {
     const p = porId(l.id);
-    return `${l.q}x ${p.nome} — ${brl(p.preco)}`;
+    return `${l.q}x ${nomeLinha(p, l.vid)} — ${brl(precoDe(p, l.vid))}`;
   });
-  const sub = CART.reduce((s,l) => s + porId(l.id).preco*l.q, 0);
+  const sub = CART.reduce((s,l) => s + precoDe(porId(l.id), l.vid)*l.q, 0);
   return (LANG === "pt"
     ? "Olá! Quero fechar este pedido na CESP:\n\n"
     : "Hi! I'd like to place this CESP order:\n\n")
@@ -447,14 +475,16 @@ function pintaCart(){
   corpo.innerHTML = CART.map(l => {
     const p = porId(l.id);
     const foto = (p.fotos||[])[0];
+    const enc = estoqueDe(p, l.vid) === 0 && p.repro;
     return `<div class="linha-item">
       <div class="mini">${foto?`<img src="${esc(foto)}" alt="" style="width:100%;height:100%;object-fit:cover">`:""}</div>
-      <div><div class="n">${esc(p.nome)}</div>
-      <div class="p">${l.q} × ${brl(p.preco)}${p.estoque===0&&p.repro?" · "+t("e_encomenda"):""}</div></div>
-      <span class="x" data-tira="${p.id}">&times;</span></div>`;
+      <div><div class="n">${esc(nomeLinha(p, l.vid))}</div>
+      <div class="p">${l.q} × ${brl(precoDe(p, l.vid))}${enc?" · "+t("e_encomenda"):""}</div></div>
+      <span class="x" data-tira="${esc(chaveLinha(l))}">&times;</span></div>`;
   }).join("");
-  const sub = CART.reduce((s,l) => s + porId(l.id).preco*l.q, 0);
-  const encomenda = CART.some(l => { const p = porId(l.id); return p.estoque===0 && p.repro; });
+  const sub = CART.reduce((s,l) => s + precoDe(porId(l.id), l.vid)*l.q, 0);
+  const encomenda = CART.some(l => { const p = porId(l.id);
+    return estoqueDe(p, l.vid) === 0 && p.repro; });
   pe.innerHTML = `<div class="tot"><span>${t("subtotal")}</span><span>${brl(sub)}</span></div>
     <div class="tot"><span>${t("frete")}</span><span style="color:var(--bruma)">${t("no_checkout")}</span></div>
     <div class="tot grande"><span>${t("total")}</span><span>${brl(sub)}</span></div>
@@ -535,12 +565,22 @@ function telaItem(id){
     bloco = `<div class="compra"><div class="valor" style="font-size:20px">${t("acervo_tit")}</div>
       <div class="obs">${t("acervo_obs")}</div></div>`;
   } else if(p.estoque > 0 || p.repro){
-    const encomenda = p.estoque === 0 && p.repro;
+    const vs = p.variacoes || [];
+    const vSel = vs.length ? (vs.find(v => v.estoque > 0) || vs[0]) : null;
+    const est = vSel ? vSel.estoque : p.estoque;
+    const encomenda = est === 0 && p.repro;
     const obs = encomenda
       ? t("sem_estoque").replace("{d}", p.producao_dias || 7)
-      : (p.estoque === 1 ? t("unica") : `${p.estoque} ${t("unidades")}.`) + " " + t("frete_checkout");
-    bloco = `<div class="compra"><div class="valor">${brl(p.preco)}</div>
-      <div class="obs">${obs}</div>
+      : (est === 1 ? t("unica") : `${est} ${t("unidades")}.`) + " " + t("frete_checkout");
+    const seletor = vs.length ? `<label class="varsel">${t("escolha")}
+      <select id="varSel">${vs.map(v =>
+        `<option value="${esc(v.id)}" data-preco="${v.preco}" data-est="${v.estoque}"
+          ${v.id===vSel.id?"selected":""} ${v.estoque===0&&!p.repro?"disabled":""}>${esc(v.nome)}${
+          v.estoque===0 ? " — " + t("e_esgotado") : ""}</option>`).join("")}</select></label>` : "";
+    bloco = `<div class="compra">
+      <div class="valor" id="valorSel">${brl(vSel ? vSel.preco : p.preco)}</div>
+      <div class="obs" id="obsSel">${obs}</div>
+      ${seletor}
       <div class="qtd-ctl"><button data-q="-">−</button><span id="q">1</span><button data-q="+">+</button></div>
       <button class="btn cheio" data-add="${p.id}">${encomenda?t("encomendar"):t("add")}</button></div>`;
   } else {
@@ -702,12 +742,29 @@ function rotear(){
 
   let q = 1;
   const cx = app.querySelector("#q");
+  const sel = app.querySelector("#varSel");
+  const idAtual = () => { const b = app.querySelector("[data-add]"); return b ? b.dataset.add : null; };
+  const vidAtual = () => sel ? sel.value : "";
+
+  if(sel) sel.onchange = () => {
+    const p2 = porId(idAtual()); if(!p2) return;
+    const v = varDe(p2, sel.value);
+    const est = v ? v.estoque : p2.estoque;
+    app.querySelector("#valorSel").textContent = brl(v ? v.preco : p2.preco);
+    app.querySelector("#obsSel").innerHTML = (est === 0 && p2.repro)
+      ? t("sem_estoque").replace("{d}", p2.producao_dias || 7)
+      : (est === 1 ? t("unica") : `${est} ${t("unidades")}.`) + " " + t("frete_checkout");
+    q = 1; if(cx) cx.textContent = "1";
+  };
+
   app.querySelectorAll("[data-q]").forEach(b => b.onclick = () => {
-    const p2 = porId((location.hash.split("/").pop()));
-    q = Math.min(p2 ? maxDe(p2) : 20, Math.max(1, q + (b.dataset.q === "+" ? 1 : -1)));
+    const p2 = porId(idAtual());
+    const teto = p2 ? maxLinha(p2, vidAtual()) : 20;
+    q = Math.min(Math.max(teto, 1), Math.max(1, q + (b.dataset.q === "+" ? 1 : -1)));
     if(cx) cx.textContent = q;
   });
-  app.querySelectorAll("[data-add]").forEach(b => b.onclick = () => addCart(b.dataset.add, q));
+  app.querySelectorAll("[data-add]").forEach(b =>
+    b.onclick = () => addCart(b.dataset.add, q, vidAtual()));
   app.querySelectorAll("[data-copia]").forEach(b => b.onclick = () => {
     navigator.clipboard.writeText(b.dataset.copia).then(() => {
       b.textContent = t("copiado");

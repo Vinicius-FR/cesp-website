@@ -206,7 +206,9 @@ h3{font-family:"JetBrains Mono",monospace;font-size:13px;margin:0 0 12px;
       <label>ID<input id="fId" maxlength="100" placeholder="token-mtg">
         <small>minúsculas, números e hífen. Não muda depois de criado.</small></label>
       <label>Nome<input id="fNome" maxlength="160"></label>
-      <label>Descrição<textarea id="fDesc" rows="3" maxlength="1000"></textarea></label>
+      <label>Descrição (PT)<textarea id="fDesc" rows="3" maxlength="1000"></textarea></label>
+      <label>Descrição (EN)<textarea id="fDescEn" rows="3" maxlength="1000"></textarea>
+        <small>vazio: o site em inglês mostra o texto em português</small></label>
       <div class="cols">
         <label>Preço (R$)<input id="fPreco" type="number" min="0" step="0.01">
           <small>0 = acervo, não está à venda</small></label>
@@ -229,6 +231,13 @@ h3{font-family:"JetBrains Mono",monospace;font-size:13px;margin:0 0 12px;
         <label>Valor declarado (R$)<input id="fDeclarado" type="number" min="0" step="0.01" value="0">
           <small>seguro do frete</small></label>
       </div>
+
+      <h3 style="margin-top:20px">Ficha técnica</h3>
+      <small style="margin:-6px 0 10px">O que aparece na tabela do item. Chave em
+        minúscula sem acento (formato, papel, ano, escala, estado). Valor EN vazio
+        repete o português.</small>
+      <div id="specs"></div>
+      <button class="btn mini" type="button" id="addSpec">+ linha</button>
 
       <h3 style="margin-top:20px">Variações</h3>
       <small style="margin:-6px 0 10px">Cada variação tem estoque próprio. Preço vazio herda o do
@@ -408,6 +417,17 @@ $("exportar").onclick = () => {
 };
 
 /* ------------------------------------------------------------ editor */
+function linhaSpec(k = "", pt = "", en = ""){
+  const d = document.createElement("div");
+  d.className = "vrow";
+  d.innerHTML = `<input placeholder="chave" value="${esc(k)}" data-s="k">
+    <input placeholder="valor PT" value="${esc(pt)}" data-s="pt" style="width:100%">
+    <input placeholder="valor EN" value="${esc(en)}" data-s="en" style="width:100%">
+    <button class="del" type="button" title="remover">×</button>`;
+  d.querySelector(".del").onclick = () => d.remove();
+  return d;
+}
+
 function linhaVar(v = {}){
   const d = document.createElement("div");
   d.className = "vrow";
@@ -421,6 +441,7 @@ function linhaVar(v = {}){
   return d;
 }
 $("addVar").onclick = () => $("vars").appendChild(linhaVar());
+$("addSpec").onclick = () => $("specs").appendChild(linhaSpec());
 
 function abrirEditor(id){
   const p = id ? PRODUTOS.find(x => x.id === id) : null;
@@ -429,6 +450,15 @@ function abrirEditor(id){
   $("fId").value = p ? p.id : ""; $("fId").disabled = !!p;
   $("fNome").value = p ? p.name : "";
   $("fDesc").value = p ? p.description : "";
+  $("fDescEn").value = p ? (p.description_en || "") : "";
+  $("specs").innerHTML = "";
+  let ficha = {};
+  try { ficha = p && p.spec_json ? JSON.parse(p.spec_json) : {}; } catch(e){ ficha = {}; }
+  Object.entries(ficha).forEach(([k, v]) => {
+    const pt = (v && typeof v === "object") ? (v.pt || "") : v;
+    const en = (v && typeof v === "object") ? (v.en || "") : "";
+    $("specs").appendChild(linhaSpec(k, pt, en));
+  });
   $("fPreco").value = p ? (p.price_cents/100) : 0;
   $("fEstoque").value = p ? p.stock : 0;
   $("fCat").value = p ? p.category : "cards";
@@ -490,10 +520,20 @@ $("salvar").onclick = async () => {
     };
   }).filter(v => v.name);
 
+  const ficha = {};
+  [...$("specs").children].forEach(d => {
+    const g = k => d.querySelector(`[data-s="${k}"]`).value.trim();
+    const chave = g("k"), pt = g("pt"), en = g("en");
+    if(!chave || !pt) return;
+    ficha[chave] = en ? {pt, en} : pt;
+  });
+
   const corpo = {
     id: $("fId").value.trim().toLowerCase(),
     name: $("fNome").value.trim(),
     description: $("fDesc").value.trim(),
+    description_en: $("fDescEn").value.trim(),
+    spec_json: ficha,
     price_cents: Math.round(Number($("fPreco").value) * 100) || 0,
     stock: Number($("fEstoque").value) || 0,
     category: $("fCat").value,

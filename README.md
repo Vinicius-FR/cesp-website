@@ -13,12 +13,12 @@ frete e etiqueta pelo Melhor Envio, notificação por SMTP.
 > | Site (vitrine, carrinho, notas, apoio, 2 idiomas) | **pronta** |
 > | Painel admin + API de administração | **pronta**, com 33 testes |
 > | Banco, bindings, secrets, deploy | **pronto** |
-> | **API de loja** — catálogo público, cotação, checkout, webhook, baixa de estoque, etiqueta, e-mail | **NÃO IMPLEMENTADA** |
+> | **Catálogo público** — o site lê o que você cadastra no painel | **pronto** |
+> | **Checkout** — cotação, pagamento, webhook, baixa de estoque, etiqueta, e-mail | **NÃO IMPLEMENTADO** |
 >
 > Na prática: **hoje o site vende pelo WhatsApp**, não por checkout automático.
-> Você consegue publicar, cadastrar produto pelo painel e receber pedido — mas o
-> pagamento é combinado na conversa. O checkout automático depende da camada de
-> loja, detalhada na seção 15.
+> Cadastrar produto no painel já reflete no site na hora; o que falta é o
+> pagamento, que ainda é combinado na conversa. Detalhes na seção 15.
 
 ---
 
@@ -160,11 +160,16 @@ wrangler secret put SALE_NOTIFICATION_TO
 Para rodar local, copie `.dev.vars.example` para `.dev.vars` e preencha. Esse
 arquivo está no `.gitignore` e precisa continuar lá.
 
-O `ADMIN_API_KEY` é a senha do painel. Gere uma de verdade:
+O `ADMIN_API_KEY` é a senha do painel. Gere uma de verdade e **sem quebra de
+linha no fim** — é a causa nº 1 de "chave incorreta" com a chave certa:
 
 ```bash
-openssl rand -base64 32
+openssl rand -base64 32 | tr -d '\n'
 ```
+
+Guarde no gerenciador de senhas antes de fechar o terminal: `wrangler secret list`
+mostra só os nomes, e a Cloudflare nunca devolve o valor de um secret. Perdeu,
+regrava.
 
 ---
 
@@ -308,9 +313,18 @@ python3 -m http.server 8000
 Abrir o `index.html` com dois cliques não funciona: o navegador bloqueia leitura
 de `.json` e chamada de API em `file://`.
 
-**CORS:** o Worker só aceita requisição vinda de `STORE_ORIGIN`. Enquanto testa
-em `localhost`, acrescente a origem local nessa variável do `wrangler.jsonc` e
-faça deploy de novo — senão o carrinho falha sem mensagem clara.
+**CORS:** `STORE_ORIGIN` aceita **lista separada por vírgula**, e precisa conter
+todas as origens de onde o site é servido. Atenção: `https://site.com` e
+`https://www.site.com` são origens **diferentes** para o navegador — a causa mais
+comum de `Failed to fetch` no primeiro acesso. Inclua as duas e o `localhost`:
+
+```jsonc
+"STORE_ORIGIN": "https://www.seudominio,https://seudominio,http://localhost:8000"
+```
+
+`/api/health` lista `origens_aceitas`, para conferir sem adivinhar. Depois de
+mudar, faça `wrangler deploy` e recarregue o site com Ctrl+Shift+R — o navegador
+guarda o preflight por até 24 h.
 
 ---
 
