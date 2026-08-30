@@ -207,6 +207,35 @@ footer{border-top:1px solid var(--linha);margin-top:40px;padding:28px 0 46px}
   color:var(--osso);cursor:pointer;font-size:15px;line-height:1}
 .qtd-ctl button:hover{border-color:var(--fosforo-d)}
 .wpp{font-size:12px;color:var(--bruma);margin-top:9px;line-height:1.5}
+.form{display:grid;gap:12px;grid-template-columns:1fr}
+@media(min-width:700px){.form{grid-template-columns:1fr 1fr}}
+.form label{display:block;font-family:"JetBrains Mono",monospace;font-size:10.5px;
+  color:var(--bruma);letter-spacing:.1em;text-transform:uppercase}
+.form input{width:100%;margin-top:5px;background:var(--carvao);border:1px solid var(--linha);
+  color:var(--osso);padding:11px 12px;font-family:"JetBrains Mono",monospace;font-size:14px}
+.form input:focus{outline:0;border-color:var(--fosforo-d)}
+.form .largo{grid-column:1/-1}
+.co-sec{margin:26px 0 0}
+.co-sec h3{font-family:"JetBrains Mono",monospace;font-weight:800;font-size:15px;
+  letter-spacing:-.02em;margin:0 0 14px;padding-bottom:8px;border-bottom:1px solid var(--linha)}
+.fretes{display:grid;gap:8px;margin-top:6px}
+.frete{display:flex;justify-content:space-between;gap:12px;align-items:center;
+  border:1px solid var(--linha);background:var(--carvao);padding:12px 14px;cursor:pointer}
+.frete.on{border-color:var(--fosforo)}
+.frete .n{font-family:"JetBrains Mono",monospace;font-size:13px}
+.frete .d{font-size:11.5px;color:var(--bruma);font-family:"JetBrains Mono",monospace}
+.frete .p{font-family:"JetBrains Mono",monospace;font-weight:800;font-size:14px}
+.resumo{border-top:1px solid var(--linha);margin-top:20px;padding-top:14px}
+.resumo div{display:flex;justify-content:space-between;font-family:"JetBrains Mono",monospace;
+  font-size:13px;margin-bottom:6px}
+.resumo .g{font-size:18px;font-weight:800;margin-top:10px}
+.aviso-co{font-family:"JetBrains Mono",monospace;font-size:12px;margin-top:12px;min-height:18px}
+.aviso-co.err{color:var(--R)}
+.pedido{max-width:60ch;padding:30px 0}
+.pedido h1{font-family:"JetBrains Mono",monospace;font-weight:800;
+  font-size:clamp(21px,5vw,28px);letter-spacing:-.03em;margin:0 0 10px}
+.pedido .nsu{font-family:"Silkscreen",monospace;font-size:9px;color:var(--fosforo-d)}
+.pedido .cx{border:1px solid var(--linha);background:var(--carvao);padding:18px;margin:18px 0}
 .varsel{display:block;font-family:"JetBrains Mono",monospace;font-size:11px;
   color:var(--bruma);margin:0 0 12px;letter-spacing:.08em;text-transform:uppercase}
 .varsel select{width:100%;margin-top:6px;background:var(--preto);color:var(--osso);
@@ -347,6 +376,43 @@ const DIC = {
   abrir:{pt:"abrir a ferramenta", en:"open the tool"},
   so_pt:{pt:"", en:"this one is only in Portuguese"},
   escolha:{pt:"escolha o tipo", en:"pick the type"},
+  co_titulo:{pt:"Finalizar pedido", en:"Checkout"},
+  co_dados:{pt:"Seus dados", en:"Your details"},
+  co_entrega:{pt:"Entrega", en:"Delivery"},
+  co_nome:{pt:"nome completo", en:"full name"},
+  co_email:{pt:"e-mail", en:"e-mail"},
+  co_tel:{pt:"telefone com DDD", en:"phone"},
+  co_doc:{pt:"CPF", en:"tax ID (CPF)"},
+  co_cep:{pt:"CEP", en:"postal code"},
+  co_rua:{pt:"rua", en:"street"},
+  co_num:{pt:"número", en:"number"},
+  co_compl:{pt:"complemento", en:"complement"},
+  co_bairro:{pt:"bairro", en:"district"},
+  co_cidade:{pt:"cidade", en:"city"},
+  co_uf:{pt:"UF", en:"state"},
+  co_calcular:{pt:"calcular frete", en:"calculate shipping"},
+  co_calculando:{pt:"calculando…", en:"calculating…"},
+  co_frete:{pt:"Frete", en:"Shipping"},
+  co_pagar:{pt:"ir para o pagamento", en:"go to payment"},
+  co_indo:{pt:"abrindo o pagamento…", en:"opening payment…"},
+  co_resumo:{pt:"Resumo", en:"Summary"},
+  co_dias:{pt:"dias úteis", en:"business days"},
+  co_so_br:{pt:"Entrega e pagamento só dentro do Brasil. Fora daqui, me chame no direct.",
+            en:"Delivery and payment inside Brazil only. Outside, please DM me."},
+  co_vazio:{pt:"Seu carrinho está vazio.", en:"Your cart is empty."},
+  ped_titulo:{pt:"Seu pedido", en:"Your order"},
+  ped_conferindo:{pt:"conferindo o pagamento…", en:"checking payment…"},
+  ped_pago:{pt:"Pagamento confirmado.", en:"Payment confirmed."},
+  ped_pago_txt:{pt:"Recebi seu pedido e já vou preparar o envio. O código de rastreio vai por e-mail.",
+                en:"Order received. I'll get it ready for shipping and send tracking by e-mail."},
+  ped_producao:{pt:"Tem item sob encomenda: produzo antes de despachar.",
+                en:"Has a made-to-order item: I'll produce it before shipping."},
+  ped_esperando:{pt:"Ainda não recebi a confirmação.", en:"Payment not confirmed yet."},
+  ped_esperando_txt:{pt:"Se você acabou de pagar, pode levar alguns segundos. Esta página se atualiza sozinha.",
+                     en:"If you just paid, it can take a few seconds. This page refreshes itself."},
+  ped_recibo:{pt:"ver comprovante", en:"view receipt"},
+  ped_semid:{pt:"Não achei o número do pedido. Se você pagou, me chame no direct com o comprovante.",
+             en:"Couldn't find the order number. If you paid, DM me the receipt."},
   rod_entrega:{pt:"entrega e prazos", en:"shipping and delivery"},
   rod_trocas:{pt:"trocas e devoluções", en:"returns and exchanges"},
   rod_contato:{pt:"contato", en:"contact"}
@@ -459,11 +525,8 @@ function textoPedido(){
 
 function finalizar(){
   if(!CART.length) return;
-  if(CFG.API_BASE){
-    location.href = CFG.API_BASE.replace(/\/$/,"") + "/checkout?cart=" +
-      encodeURIComponent(JSON.stringify(CART));
-    return;
-  }
+  // Com API no ar, o pedido passa pela tela de checkout. Sem API, WhatsApp.
+  if(CFG.API_BASE){ fechaCart(); location.hash = L("checkout"); return; }
   window.open("https://wa.me/" + (CFG.WHATSAPP||"") + "?text=" +
     encodeURIComponent(textoPedido()), "_blank", "noopener");
 }
@@ -666,6 +729,200 @@ function telaNota(slug){
   </article></div>`;
 }
 
+
+/* ------------------------------------------------------------ checkout */
+const API = () => (CFG.API_BASE || "").replace(/\/$/, "");
+let FRETES = [], FRETE_SEL = null;
+
+function telaCheckout(){
+  if(!CART.length) return `<div class="wrap"><section class="secao">
+    <div class="secao-cab"><h2>${t("co_titulo")}</h2></div>
+    <div class="vazio">${t("co_vazio")}</div></section></div>`;
+
+  const sub = CART.reduce((s,l) => s + precoDe(porId(l.id), l.vid)*l.q, 0);
+  const campo = (id, rot, tipo, largo, extra) =>
+    `<label class="${largo?"largo":""}">${rot}
+      <input id="${id}" type="${tipo||"text"}" ${extra||""}></label>`;
+
+  return `<div class="wrap"><section class="secao">
+    <div class="secao-cab"><h2>${t("co_titulo")}</h2></div>
+
+    <div class="co-sec"><h3>${t("co_dados")}</h3>
+      <div class="form">
+        ${campo("cNome", t("co_nome"), "text", true, 'autocomplete="name"')}
+        ${campo("cEmail", t("co_email"), "email", false, 'autocomplete="email"')}
+        ${campo("cTel", t("co_tel"), "tel", false, 'autocomplete="tel" inputmode="numeric"')}
+        ${campo("cDoc", t("co_doc"), "text", false, 'inputmode="numeric"')}
+      </div>
+    </div>
+
+    <div class="co-sec"><h3>${t("co_entrega")}</h3>
+      <div class="form">
+        ${campo("cCep", t("co_cep"), "text", false, 'inputmode="numeric" autocomplete="postal-code"')}
+        ${campo("cRua", t("co_rua"), "text", false, 'autocomplete="address-line1"')}
+        ${campo("cNum", t("co_num"), "text", false)}
+        ${campo("cCompl", t("co_compl"), "text", false)}
+        ${campo("cBairro", t("co_bairro"), "text", false)}
+        ${campo("cCidade", t("co_cidade"), "text", false)}
+        ${campo("cUf", t("co_uf"), "text", false, 'maxlength="2"')}
+      </div>
+      <button class="btn" id="btFrete" style="margin-top:14px">${t("co_calcular")}</button>
+    </div>
+
+    <div class="co-sec" id="secFrete" style="display:none"><h3>${t("co_frete")}</h3>
+      <div class="fretes" id="fretes"></div>
+    </div>
+
+    <div class="resumo">
+      <div><span>${t("subtotal")}</span><span>${brl(sub)}</span></div>
+      <div><span>${t("frete")}</span><span id="rFrete">—</span></div>
+      <div class="g"><span>${t("total")}</span><span id="rTotal">${brl(sub)}</span></div>
+      <button class="btn cheio" id="btPagar" style="width:100%;padding:14px;margin-top:8px"
+        disabled>${t("co_pagar")}</button>
+      <div class="aviso-co" id="avisoCo">${t("co_so_br")}</div>
+    </div>
+  </section></div>`;
+}
+
+function ligarCheckout(app){
+  const g = id => (app.querySelector("#" + id) || {}).value || "";
+  const sub = () => CART.reduce((s,l) => s + precoDe(porId(l.id), l.vid)*l.q, 0);
+  const aviso = (txt, err) => {
+    const el = app.querySelector("#avisoCo");
+    el.textContent = txt; el.className = "aviso-co" + (err ? " err" : "");
+  };
+
+  // CEP preenche o endereço sozinho
+  const cep = app.querySelector("#cCep");
+  cep.addEventListener("blur", async () => {
+    const v = cep.value.replace(/\D/g, "");
+    if(v.length !== 8) return;
+    try{
+      const d = await fetch(`https://viacep.com.br/ws/${v}/json/`).then(r => r.json());
+      if(d.erro) return;
+      const p = (id, val) => { const e = app.querySelector("#" + id); if(e && !e.value) e.value = val || ""; };
+      p("cRua", d.logradouro); p("cBairro", d.bairro);
+      p("cCidade", d.localidade); p("cUf", d.uf);
+      app.querySelector("#cNum").focus();
+    }catch(e){ /* endereço na mão */ }
+  });
+
+  const itens = () => CART.map(l => ({id:l.id, vid:l.vid, q:l.q}));
+
+  app.querySelector("#btFrete").onclick = async () => {
+    const b = app.querySelector("#btFrete");
+    b.disabled = true; b.textContent = t("co_calculando"); aviso("");
+    try{
+      const r = await fetch(API() + "/api/shipping/quote", {
+        method:"POST", headers:{"content-type":"application/json"},
+        body: JSON.stringify({cep: g("cCep"), itens: itens()})
+      });
+      const d = await r.json();
+      if(!r.ok) throw new Error(d.mensagem || "erro");
+      FRETES = d.opcoes; FRETE_SEL = null;
+      app.querySelector("#secFrete").style.display = "";
+      app.querySelector("#fretes").innerHTML = FRETES.map((o,i) =>
+        `<div class="frete" data-f="${i}">
+          <div><div class="n">${esc(o.transportadora)} ${esc(o.nome)}</div>
+          <div class="d">${o.prazo_dias ? o.prazo_dias + " " + t("co_dias") : ""}</div></div>
+          <div class="p">${brl(o.preco_centavos)}</div></div>`).join("");
+      app.querySelectorAll("[data-f]").forEach(el => el.onclick = () => {
+        app.querySelectorAll(".frete").forEach(x => x.classList.remove("on"));
+        el.classList.add("on");
+        FRETE_SEL = FRETES[Number(el.dataset.f)];
+        app.querySelector("#rFrete").textContent = brl(FRETE_SEL.preco_centavos);
+        app.querySelector("#rTotal").textContent = brl(sub() + FRETE_SEL.preco_centavos);
+        app.querySelector("#btPagar").disabled = false;
+      });
+      if(FRETES.length === 1) app.querySelector("[data-f]").click();
+    }catch(e){ aviso(String(e.message || e), true); }
+    b.disabled = false; b.textContent = t("co_calcular");
+  };
+
+  app.querySelector("#btPagar").onclick = async () => {
+    if(!FRETE_SEL) return;
+    const b = app.querySelector("#btPagar");
+    b.disabled = true; b.textContent = t("co_indo"); aviso("");
+    try{
+      const r = await fetch(API() + "/api/checkout", {
+        method:"POST", headers:{"content-type":"application/json"},
+        body: JSON.stringify({
+          cliente:{nome:g("cNome"), email:g("cEmail"), telefone:g("cTel"), documento:g("cDoc")},
+          endereco:{cep:g("cCep"), rua:g("cRua"), numero:g("cNum"), complemento:g("cCompl"),
+            bairro:g("cBairro"), cidade:g("cCidade"), uf:g("cUf")},
+          frete_id: FRETE_SEL.id, itens: itens()
+        })
+      });
+      const d = await r.json();
+      if(!r.ok) throw new Error(d.mensagem || "erro no checkout");
+      // guarda o número antes de sair do site: o retorno pode vir sem parâmetro
+      try{ sessionStorage.setItem("cesp_pedido", d.order_nsu); }catch(e){}
+      CART = [];
+      location.href = d.url;
+    }catch(e){
+      aviso(String(e.message || e), true);
+      b.disabled = false; b.textContent = t("co_pagar");
+    }
+  };
+}
+
+/* ------------------------------------------------- retorno do pagamento */
+function telaPedido(){
+  return `<div class="wrap"><div class="pedido">
+    <h1 id="pedTit">${t("ped_conferindo")}</h1>
+    <div class="nsu" id="pedNsu"></div>
+    <div class="cx" id="pedCx"></div>
+  </div></div>`;
+}
+
+function ligarPedido(app){
+  const q = new URLSearchParams(location.search);
+  const hq = new URLSearchParams((location.hash.split("?")[1] || ""));
+  const pega = k => q.get(k) || hq.get(k) || "";
+  let nsu = pega("order_nsu");
+  if(!nsu){ try{ nsu = sessionStorage.getItem("cesp_pedido") || ""; }catch(e){} }
+
+  if(!nsu){
+    app.querySelector("#pedTit").textContent = t("ped_esperando");
+    app.querySelector("#pedCx").textContent = t("ped_semid");
+    return;
+  }
+  app.querySelector("#pedNsu").textContent = nsu;
+
+  let tentativas = 0;
+  async function conferir(){
+    tentativas++;
+    try{
+      const url = API() + "/api/payment-status?order_nsu=" + encodeURIComponent(nsu) +
+        (pega("transaction_nsu") ? "&transaction_nsu=" + encodeURIComponent(pega("transaction_nsu")) : "") +
+        (pega("slug") ? "&slug=" + encodeURIComponent(pega("slug")) : "");
+      const d = await fetch(url).then(r => r.json());
+      if(d.pago){
+        const p = d.pedido || {};
+        app.querySelector("#pedTit").textContent = t("ped_pago");
+        app.querySelector("#pedCx").innerHTML =
+          `<p style="margin:0 0 10px">${t("ped_pago_txt")}</p>
+           ${p.requires_production ? `<p style="margin:0 0 10px;color:var(--G)" class="mono">${t("ped_producao")}</p>` : ""}
+           <div class="mono" style="font-size:13px;color:var(--bruma)">
+             ${t("total")}: ${brl(p.total_cents || 0)}${
+               p.shipping_company ? " · " + esc(p.shipping_company) + " " + esc(p.shipping_service_name || "") : ""}
+           </div>
+           ${p.receipt_url ? `<a class="btn" style="margin-top:12px;display:inline-block"
+              href="${esc(p.receipt_url)}" target="_blank" rel="noopener">${t("ped_recibo")}</a>` : ""}`;
+        return;
+      }
+      app.querySelector("#pedTit").textContent = t("ped_esperando");
+      app.querySelector("#pedCx").textContent = t("ped_esperando_txt");
+      if(tentativas < 20) setTimeout(conferir, 3000);
+    }catch(e){
+      app.querySelector("#pedTit").textContent = t("ped_esperando");
+      app.querySelector("#pedCx").textContent = t("ped_esperando_txt");
+      if(tentativas < 20) setTimeout(conferir, 4000);
+    }
+  }
+  conferir();
+}
+
 /* ---------------------------------------------------------------- rotas */
 function pintaDirs(atual){
   document.getElementById("dirs").innerHTML =
@@ -718,6 +975,16 @@ function rotear(){
     dir = "notes";
     caminho = p[1] ? `~$ <b>cat notes/${p[1]}.md</b>` : "~$ <b>ls notes/</b>";
     app.innerHTML = p[1] ? telaNota(p[1]) : telaNotas();
+  }
+  else if(p[0] === "checkout"){
+    caminho = "~$ <b>./checkout</b>";
+    app.innerHTML = telaCheckout();
+    if(CART.length) ligarCheckout(app);
+  }
+  else if(p[0] === "pedido"){
+    caminho = "~$ <b>cat pedido.txt</b>";
+    app.innerHTML = telaPedido();
+    ligarPedido(app);
   }
   else if(p[0] === "support"){
     caminho = "~$ <b>cat support.md</b>";
