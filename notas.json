@@ -2,6 +2,9 @@
   "_leia": "Cada nota tem: slug, langs (em quais idiomas ela existe), data, título, resumo e corpo (um item do array por parágrafo). Nota que só existe em português é marcada automaticamente na listagem.",
 
   "notas": [
+    
+  ],
+  "achived": [
     {
       "slug": "tokens",
       "langs": ["pt"],
